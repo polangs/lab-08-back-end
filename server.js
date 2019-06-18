@@ -16,20 +16,20 @@ client.on('error', err => console.error(err));
 
 // Application set up
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 4000;
 app.use(cors());
 
 
 // get location
 
-// routes
+// routes 
 app.get('/location', handleLocation);
 app.get('/weather', handleWeather);
 // app.get('/events', handleEvents);
 
 // internal modules
 const getLocation = require('./modules/locations.js');
-const getForecasts = require('./modules/weather');
+const getForecasts = require('./modules/weather.js');
 // const getEvents = require('./modules/events');
 
 
@@ -45,7 +45,10 @@ function handleWeather(req, res) {
   console.log('************* handle weather', req.query.data);
 
   getForecasts(req.query.data.latitude, req.query.data.longitude, req.query.data.id, client, superagent)
-    .then(forecasts => res.send(forecasts))
+    .then(forecasts => {
+      console.log('=====================', forecasts);
+      return res.send(forecasts);
+    })
     .catch(error => handleError(error, res));
 }
 
