@@ -2,15 +2,15 @@ function getForecasts(latitude, longitude, locationId, client, superagent) {
 
   return getFromCache(client, locationId)
     .then(forecasts => {
-      console.log('forecasts', forecasts)
-
       if (forecasts.length === 0) {
-        return getFromAPI(latitude, longitude, locationId, client, superagent);
+        return getFromAPI(latitude, longitude, locationId, client, superagent)
+          .then(forecasts => {
+            return forecasts;
+          });
       } else {
         return forecasts;
       }
-    })
-
+    });
 }
 
 function getFromCache(client, locationId) {
@@ -20,8 +20,7 @@ function getFromCache(client, locationId) {
     .then(result => {
       console.log('result', result.rows)
       return result.rows;
-    })
-
+    });
 }
 
 function getFromAPI(latitude, longitude, locationId, client, superagent) {
@@ -31,24 +30,26 @@ function getFromAPI(latitude, longitude, locationId, client, superagent) {
 
   return superagent
     .get(URL)
-    .then(response => response.body.daily.data)
-    .then(days => days.map(day => new Weather(day)))
-    .then(dayInstances => cacheForecasts(dayInstances, locationId, client))
-
+    .then(response => {
+      let weatherSummaries = response.body.daily.data.map((element) => {
+        return new Weather (element);
+      });
+      cacheForecasts(weatherSummaries, locationId, client);
+      return weatherSummaries;
+    });
 }
 
 function cacheForecasts(dayInstances, locationId, client) {
 
   dayInstances.forEach(day => {
-
-    const SQL = `
-      INSERT INTO weathers (forecast, time, location_id) 
-      VALUES (${day.foreacast}, ${day.time}, ${locationId});`;
-
+    const SQL = `INSERT INTO weathers (forecast, time, location_id) 
+      VALUES('${day.forecast}', '${day.time}', '${locationId}');`
     client.query(SQL); // (insertSQL)
-
   });
+  return dayInstances;
 }
+
+//constructor function
 
 function Weather(dayData) {
   this.forecast = dayData.summary;

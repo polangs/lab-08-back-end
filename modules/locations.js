@@ -1,5 +1,4 @@
 function getLocation(query, client, superagent) {
-  // console.log('in get locations', query);
   return getStoredLocation(query, client)
     .then(location => {
 
@@ -38,14 +37,12 @@ function getLocationFromApi(query, client, superagent) {
 }
 
 function cacheLocation(location, client) {
-  const insertSQL = `
-          INSERT INTO locations (search_query, formatted_query, latitude, longitude)
+  const insertSQL = `INSERT INTO locations (search_query, formatted_query, latitude, longitude)
           VALUES('${location.search_query}','${location.formatted_query}', ${location.latitude}, ${location.longitude});
       `;
-
   return client.query(insertSQL).then(results => location);
 }
-
+//constructor function
 function Location(query, geoData) {
   this.search_query = query;
   this.formatted_query = geoData.formatted_address;
