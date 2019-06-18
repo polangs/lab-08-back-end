@@ -1,25 +1,33 @@
 function getForecasts(latitude, longitude, locationId, client, superagent) {
 
-  let forecasts = getFromCache(client, locationId);
+  return getFromCache(client, locationId)
+    .then(forecasts => {
+      console.log('forecasts', forecasts)
 
-  if (forecasts.length === 0) {
-    forecasts = getFromAPI(latitude, longitude, locationId, client, superagent);
-  } else {
-    return forecasts;
-  }
+      if (forecasts.length === 0) {
+        return getFromAPI(latitude, longitude, locationId, client, superagent);
+      } else {
+        return forecasts;
+      }
+    })
+
 }
 
 function getFromCache(client, locationId) {
+  console.log('in get chache');
 
-  return client
-    .get('SELECT * FROM weathers WHERE location_id=' + locationId)
-    .then(result => result.rows);
+  return client.query('SELECT * FROM weathers WHERE location_id=' + locationId)
+    .then(result => {
+      console.log('result', result.rows)
+      return result.rows;
+    })
 
 }
 
 function getFromAPI(latitude, longitude, locationId, client, superagent) {
 
   const URL = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${latitude},${longitude}`
+  console.log('url', URL);
 
   return superagent
     .get(URL)
@@ -47,4 +55,4 @@ function Weather(dayData) {
   this.time = new Date(dayData.time * 1000).toString().slice(0, 15);
 }
 
-module.exports = getForecasts; 
+module.exports = getForecasts;
