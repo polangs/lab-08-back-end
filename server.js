@@ -25,17 +25,17 @@ app.use(cors());
 // routes
 app.get('/location', handleLocation);
 app.get('/weather', handleWeather);
-app.get('/events', handleEvents);
+// app.get('/events', handleEvents);
 
 // internal modules
-const getLocation = require('./modules/locations');
+const getLocation = require('./modules/locations.js');
 const getForecasts = require('./modules/weather');
-const getEvents = require('./modules/events');
+// const getEvents = require('./modules/events');
 
 
 // route handlers
 function handleLocation(req, res) {
-
+  // console.log('handleLocation', req.query.data);
   getLocation(req.query.data, client, superagent)
     .then(location => res.send(location))
     .catch(error => handleError(error, res));
@@ -44,22 +44,22 @@ function handleLocation(req, res) {
 function handleWeather(req, res) {
   console.log('************* handle weather', req.query.data);
 
-  getForecasts(req.query.data.latitude, req.query.data.longitude, client, superagent)
+  getForecasts(req.query.data.latitude, req.query.data.longitude, req.query.data.id, client, superagent)
     .then(forecasts => res.send(forecasts))
     .catch(error => handleError(error, res));
 }
 
-function handleEvents(req, res) {
+// function handleEvents(req, res) {
 
-  getEvents(req.query)
-    .then(data => res.send(data))
-    .catch(error => handleError(error))
+//   // getEvents(req.query)
+//   //   .then(data => res.send(data))
+//   //   .catch(error => handleError(error))
 
 
-  getEvents(req.query.data.formatted_query, client, superagent)
-    .then(events => res.send(events))
-    .catch(error => handleError(error, res));
-}
+//   getEvents(req.query.data.formatted_query, client, superagent)
+//     .then(events => res.send(events))
+//     .catch(error => handleError(error, res));
+// }
 
 function handleError(error, response) {
   console.error(error);

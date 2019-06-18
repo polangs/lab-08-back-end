@@ -1,5 +1,5 @@
 function getLocation(query, client, superagent) {
-
+  // console.log('in get locations', query);
   return getStoredLocation(query, client)
     .then(location => {
 
@@ -25,10 +25,14 @@ function getLocationFromApi(query, client, superagent) {
 
 
   const URL = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEO_CODE_API_KEY}`
+  console.log(URL);
 
   return superagent
     .get(URL)
-    .then(response => new Location(query, response.body.results[0]))
+    .then(response => {
+      console.log(response.body.results[0]);
+      return new Location(query, response.body.results[0])
+    })
     .then(location => cacheLocation(location, client));
 
 }
