@@ -31,6 +31,7 @@ function getFromAPI(latitude, longitude, locationId, client, superagent) {
   return superagent
     .get(URL)
     .then(response => {
+      console.log('reuslts', response);
       let weatherSummaries = response.body.daily.data.map((element) => {
         return new Weather (element);
       });

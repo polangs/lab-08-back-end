@@ -46,7 +46,7 @@ function handleWeather(req, res) {
 
   getForecasts(req.query.data.latitude, req.query.data.longitude, req.query.data.id, client, superagent)
     .then(forecasts => {
-      console.log('=====================', forecasts);
+      // console.log('=====================', forecasts);
       return res.send(forecasts);
     })
     .catch(error => handleError(error, res));
